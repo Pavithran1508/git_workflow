@@ -12,6 +12,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Configure Git Identity
+        run: |
+          git config --global user.name "Pavithran1508"
+          git config --global user.email "pavithrang4@gmail.com"
+
       - name: Create file using client_payload
         run: |
           FILE_NAME="${{ github.event.client_payload.name }}.txt"
