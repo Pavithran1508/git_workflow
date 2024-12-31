@@ -1,0 +1,17 @@
+name: Repository Dispatch Workflow
+
+# Triggered by push events and the repository_dispatch event
+on:
+  push:
+    branches:
+      - main # Specify the branch to monitor for changes
+  repository_dispatch:
+    types: [hello_event] # Custom event type
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Respond to Trigger
+        run: echo "Hello, World!"
