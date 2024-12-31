@@ -17,9 +17,14 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
 
+      - name: Debug Event Payload
+        run: |
+          echo "Event payload: ${{ toJson(github.event.client_payload) }}"
+
       - name: Create file using client_payload
         run: |
           FILE_NAME="${{ github.event.client_payload.name }}.txt"
+          echo "Creating file: $FILE_NAME"
           echo "This file is created by a repository_dispatch event." > $FILE_NAME
           echo "Hello, ${{ github.event.client_payload.name }}!" >> $FILE_NAME
           cat $FILE_NAME
