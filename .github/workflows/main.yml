@@ -14,14 +14,15 @@ jobs:
 
       - name: Configure Git Identity
         run: |
-          git config --global user.name "Pavithran1508"
-          git config --global user.email "pavithrang4@gmail.com"
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
 
       - name: Create file using client_payload
         run: |
           FILE_NAME="${{ github.event.client_payload.name }}.txt"
           echo "This file is created by a repository_dispatch event." > $FILE_NAME
           echo "Hello, ${{ github.event.client_payload.name }}!" >> $FILE_NAME
+          cat $FILE_NAME
           git add $FILE_NAME
           git commit -m "Add $FILE_NAME"
           git push
