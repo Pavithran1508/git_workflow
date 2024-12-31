@@ -15,15 +15,20 @@ jobs:
       - name: Configure Git Identity
         run: |
           git config --global user.name "Pavithran1508"
-          git config --global user.email "git_workflow"
+          git config --global user.email "pavithrang4@gmail.com"
 
       - name: Debug Event Payload
         run: |
-          echo "Event payload: ${{ toJson(github.event.client_payload) }}"
+          echo "Event payload: ${{ toJson(github.event) }}"
+          echo "Client payload name: ${{ github.event.client_payload.name }}"
 
       - name: Create file using client_payload
         run: |
           FILE_NAME="${{ github.event.client_payload.name }}.txt"
+          if [ -z "$FILE_NAME" ] || [ "$FILE_NAME" = ".txt" ]; then
+            echo "ERROR: The 'name' field in client_payload is empty or invalid!"
+            exit 1
+          fi
           echo "Creating file: $FILE_NAME"
           echo "This file is created by a repository_dispatch event." > $FILE_NAME
           echo "Hello, ${{ github.event.client_payload.name }}!" >> $FILE_NAME
