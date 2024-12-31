@@ -1,17 +1,22 @@
-name: Repository Dispatch Workflow
+name: Repository Dispatch File Creator
 
-# Triggered by push events and the repository_dispatch event
 on:
-  push:
-    branches:
-      - main # Specify the branch to monitor for changes
   repository_dispatch:
-    types: [hello_event] # Custom event type
+    types: [hello_event]
 
 jobs:
-  say-hello:
+  create-file:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Respond to Trigger
-        run: echo "Hello, World!"
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create file using client_payload
+        run: |
+          FILE_NAME="${{ github.event.client_payload.name }}.txt"
+          echo "This file is created by a repository_dispatch event." > $FILE_NAME
+          echo "Hello, ${{ github.event.client_payload.name }}!" >> $FILE_NAME
+          git add $FILE_NAME
+          git commit -m "Add $FILE_NAME"
+          git push
