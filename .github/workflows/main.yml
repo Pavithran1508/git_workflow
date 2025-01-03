@@ -1,27 +1,40 @@
-name: Repository Dispatch File Creator
+name: Create File and Push to Main
 
 on:
   repository_dispatch:
-    types: [hello_event]
+    types: [UserNameProvided]
 
 jobs:
-  create-file:
+  create_and_push_file:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configure Git Identity
+      # Set up Git user for committing changes
+      - name: Set up Git user
         run: |
           git config --global user.name "Pavithran1508"
           git config --global user.email "pavithrang4@gmail.com"
 
-      - name: Create file using client_payload
+      # Create a file using the userName from the event payload
+      - name: Create file
+        env:
+          USER_NAME: ${{ github.event.client_payload.data.name }}
         run: |
-          FILE_NAME="Pavithran.txt"
+          FILE_NAME="${USER_NAME}.txt"
           echo "This file is created by a repository_dispatch event." > $FILE_NAME
-          echo "Hello, Pavithran" >> $FILE_NAME
-          git add $FILE_NAME
-          git commit -m "Add $FILE_NAME"
-          git push
+          echo "Hello, $USER_NAME" >> $FILE_NAME
+
+      # Add the file to the repository and commit changes
+      - name: Commit changes
+        run: |
+          git add .
+          git commit -m "Add file for user $USER_NAME"
+
+      # Push changes to the main branch
+      - name: Push changes
+        run: |
+          git push origin main
