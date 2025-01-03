@@ -3,7 +3,7 @@ name: Create File and Push to Main
 on:
   repository_dispatch:
     types: [UserNameProvided]
-
+  workflow_dispatch:
 jobs:
   create_and_push_file:
     runs-on: ubuntu-latest
