@@ -1,40 +1,28 @@
-name: Create File and Push to Main
-
+name: Repository Dispatch Workflow
 on:
   repository_dispatch:
-    types: [UserNameProvided]
-  workflow_dispatch:
+    types: [hello_event]
+permissions:
+  contents: write
 jobs:
-  create_and_push_file:
+  say-hello:
     runs-on: ubuntu-latest
-
     steps:
-      # Checkout the repository
       - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Set up Git user for committing changes
-      - name: Set up Git user
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Respond to Repository Dispatch
+        run: echo "Hello,${{ github.event.client_payload.name }}!"
+      - name: Create JSON file from payload
         run: |
-          git config --global user.name "Pavithran1508"
-          git config --global user.email "pavithrang4@gmail.com"
-
-      # Create a file using the userName from the event payload
-      - name: Create file
-        env:
-          USER_NAME: ${{ github.event.client_payload.data.name }}
+          sanitized_name=$(echo "${{ github.event.client_payload.name }}" | tr ' ' '_')
+          echo '${{ toJSON(github.event.client_payload) }}' > ${sanitized_name}.json
+      - name: Commit and push
         run: |
-          FILE_NAME="${USER_NAME}.txt"
-          echo "This file is created by a repository_dispatch event." > $FILE_NAME
-          echo "Hello, $USER_NAME" >> $FILE_NAME
-
-      # Add the file to the repository and commit changes
-      - name: Commit changes
-        run: |
-          git add .
-          git commit -m "Add file for user $USER_NAME"
-
-      # Push changes to the main branch
-      - name: Push changes
-        run: |
+          git config user.email "pavithrang4@gmail.com"
+          git config user.name "Pavithran1508"
+          sanitized_name=$(echo "${{ github.event.client_payload.name }}" | tr ' ' '_')
+          git add ${sanitized_name}.json
+          git commit -m "Save client payload data for ${{ github.event.client_payload.name }}"
           git push origin main
